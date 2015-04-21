@@ -129,6 +129,8 @@ end
 function love.update(dt)
     if canExit() then
         player_state = "can_exit"
+    else
+        player_state = "moving"
     end
 end
 
