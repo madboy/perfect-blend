@@ -34,6 +34,7 @@ local tiles = {["e"]={type="exit",
                     b=c.violet_blue.b}}
 local grid = {}
 local p = {}
+local player_tile = {}
 local e = {}
 
 local level1 = {2,1,"e",1,2,
@@ -51,7 +52,7 @@ local level2 = {2,2,"e",2,2,
 local tile_set = {}
 
 local state = "game"
-local plyer_state = "moving"
+local player_state = "start"
 
 function createGrid(n, ts)
     local grid = {}
@@ -69,9 +70,12 @@ function createTiles(g, t)
     local tmp_tiles = {}
     for i, tile in ipairs(t) do
         if tile == "@" then
-            tile = 2
             p.x = g[i].x
             p.y = g[i].y
+            p.r = tiles[tile].r
+            p.g = tiles[tile].g
+            p.b = tiles[tile].b
+            tile = 2 -- setting tile to ground so that the color will be correct when we move
         elseif tile == "e" then
             e.x = g[i].x
             e.y = g[i].y
@@ -86,6 +90,17 @@ function createTiles(g, t)
     return tmp_tiles
 end
 
+function setPlayerTile(r, g, b)
+    player_tile = {r=r, g=g, b=b}
+end
+
+function changeColor()
+    if player_state == "start" then return end
+    p.r = (p.r + player_tile.r)*0.5
+    p.g = (p.g + player_tile.g)*0.5
+    p.b = (p.b + player_tile.b)*0.5
+end
+
 function canExit()
     if p.x == e.x and
         p.y == e.y then
@@ -97,7 +112,7 @@ end
 function loadNextLevel(l)
     grid = createGrid(grids, tile_size)
     tile_set = createTiles(grid, l)
-    player_state = "moving"
+    player_state = "start"
 end
 
 function love.keypressed(key)
@@ -106,15 +121,23 @@ function love.keypressed(key)
     end
     if key == "up" and p.y > 0 then
         p.y = p.y - tile_size
+        player_state = "moving"
+        changeColor()
     end
     if key == "down" and p.y < (grids-1)*tile_size then
         p.y = p.y + tile_size
+        player_state = "moving"
+        changeColor()
     end
     if key == "right" and p.x < (grids-1)*tile_size then
         p.x = p.x + tile_size
+        player_state = "moving"
+        changeColor()
     end
     if key == "left" and p.x > 0 then
         p.x = p.x - tile_size
+        player_state = "moving"
+        changeColor()
     end
     if key == "l" and player_state == "can_exit" then
         loadNextLevel(level2)
@@ -127,6 +150,7 @@ function love.load()
 end
 
 function love.update(dt)
+    if player_state == "start" then return end
     if canExit() then
         player_state = "can_exit"
     else
@@ -145,9 +169,14 @@ function love.draw()
         if tile.type == "exit" then
             love.graphics.print("exit", tile.x, tile.y)
         end
+
+        if p.x == tile.x and
+            p.y == tile.y then
+            setPlayerTile(tile.r, tile.g, tile.b)
+        end
     end
 
-    love.graphics.setColor(tiles["@"].r, tiles["@"].g, tiles["@"].b)
+    love.graphics.setColor(p.r, p.g, p.b)
     love.graphics.rectangle("fill", p.x, p.y, tile_size, tile_size)
 
     if player_state == "can_exit" then
