@@ -8,17 +8,36 @@ local c = {yellow = {r=255, g=255, b=0},
           violet_blue = {r=76, g=80, b=169},
           white = {r=255, g=255, b=255}}
 
-local tiles = {["e"]={type="exit", r=c.green_yellow.r, g=c.green_yellow.g, b=c.green_yellow.b},
-               ["@"]={type="player", r=c.white.r, g=c.white.g, b=c.white.b},
-               [2]={type="ground", r=c.yellow_orange.r, g=c.yellow_orange.g, b=c.yellow_orange.b},
-               [3]={type="ground", r=c.red_violet.r, g=c.red_violet.g, b=c.red_violet.b},
-               [4]={type="ground", r=c.violet_blue.r, g=c.violet_blue.g, b=c.violet_blue.b}}
+local tiles = {["e"]={type="exit",
+                      r=c.green_yellow.r,
+                      g=c.green_yellow.g,
+                      b=c.green_yellow.b},
+               ["@"]={type="player",
+                      r=c.white.r,
+                      g=c.white.g,
+                      b=c.white.b},
+               [1]={type="ground",
+                    r=c.green_yellow.r,
+                    g=c.green_yellow.g,
+                    b=c.green_yellow.b},
+               [2]={type="ground",
+                    r=c.yellow_orange.r,
+                    g=c.yellow_orange.g,
+                    b=c.yellow_orange.b},
+               [3]={type="ground",
+                    r=c.red_violet.r,
+                    g=c.red_violet.g,
+                    b=c.red_violet.b},
+               [4]={type="ground",
+                    r=c.violet_blue.r,
+                    g=c.violet_blue.g,
+                    b=c.violet_blue.b}}
 local grid = {}
 local p = {}
 local e = {}
 
-local level1 = {2,2,"e",2,2,
-                2,2,2,2,2,
+local level1 = {2,1,"e",1,2,
+                2,1,1,1,2,
                 2,2,2,2,2,
                 2,2,2,2,2,
                 2,2,"@",2,2}
@@ -57,7 +76,12 @@ function createTiles(g, t)
             e.x = g[i].x
             e.y = g[i].y
         end
-        table.insert(tmp_tiles, {x=g[i].x, y=g[i].y, r=tiles[tile].r, g=tiles[tile].g, b=tiles[tile].b})
+        table.insert(tmp_tiles, {type=tiles[tile].type,
+                                 x=g[i].x,
+                                 y=g[i].y,
+                                 r=tiles[tile].r,
+                                 g=tiles[tile].g,
+                                 b=tiles[tile].b})
     end
     return tmp_tiles
 end
@@ -112,12 +136,18 @@ function love.draw()
     for _, tile in ipairs(tile_set) do
         love.graphics.setColor(tile.r, tile.g, tile.b)
         love.graphics.rectangle("fill", tile.x, tile.y, tile_size, tile_size)
-    end
-    love.graphics.setColor(c.green_yellow.r, c.green_yellow.g, c.green_yellow.b)
-    love.graphics.rectangle("fill", e.x, e.y, tile_size, tile_size)
 
-    love.graphics.setColor(c.white.r, c.white.g, c.white.b)
+        love.graphics.setColor(0,0,0)
+        love.graphics.rectangle("line", tile.x, tile.y, tile_size, tile_size)
+
+        if tile.type == "exit" then
+            love.graphics.print("exit", tile.x, tile.y)
+        end
+    end
+
+    love.graphics.setColor(tiles["@"].r, tiles["@"].g, tiles["@"].b)
     love.graphics.rectangle("fill", p.x, p.y, tile_size, tile_size)
+
     if player_state == "can_exit" then
         love.graphics.setColor(0,0,0)
         love.graphics.print("E", p.x, p.y)
