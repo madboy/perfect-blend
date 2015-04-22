@@ -79,6 +79,9 @@ function createTiles(g, t)
         elseif tile == "e" then
             e.x = g[i].x
             e.y = g[i].y
+            e.r = tiles[tile].r
+            e.g = tiles[tile].g
+            e.b = tiles[tile].b
         end
         table.insert(tmp_tiles, {type=tiles[tile].type,
                                  x=g[i].x,
@@ -101,9 +104,20 @@ function changeColor()
     p.b = (p.b + player_tile.b)*0.5
 end
 
+function withinLimit(v1, v2)
+    return (math.abs(v1 - v2) < 10)
+end
+
+function colorsMatch()
+    return withinLimit(p.r, e.r) and
+           withinLimit(p.g, e.g) and
+           withinLimit(p.b, e.b)
+end
+
 function canExit()
-    if p.x == e.x and
-        p.y == e.y then
+    if (p.x == e.x and
+        p.y == e.y)  and 
+        colorsMatch() then
         return true
     end
     return false
