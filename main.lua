@@ -31,10 +31,15 @@ local tiles = {["e"]={type="exit",
                [4]={type="ground",
                     r=c.violet_blue.r,
                     g=c.violet_blue.g,
-                    b=c.violet_blue.b}}
+                    b=c.violet_blue.b},
+               [5]={type="resistance",
+                    r=c.white.r,
+                    g=c.white.g,
+                    b=c.white.b}}
 local grid = {}
 local p = {}
 local player_tile = {}
+local immunity = 0
 local e = {}
 
 local level1 = {2,1,"e",1,2,
@@ -46,9 +51,11 @@ local level1 = {2,1,"e",1,2,
 local level2 = {2,2,"e",2,2,
                 2,2,2,2,2,
                 2,2,2,2,2,
-                2,2,3,2,2,
-                2,2,"@",4,2}
+                2,2,5,2,2,
+                2,2,"@",2,2}
 
+local levels = {level1, level2}
+local level = 1
 local tile_set = {}
 
 local state = "game"
@@ -93,12 +100,25 @@ function createTiles(g, t)
     return tmp_tiles
 end
 
-function setPlayerTile(r, g, b)
+function getPlayerTile()
+    for _, tile in ipairs(tile_set) do
+        if p.x == tile.x and
+            p.y == tile.y then
+            setPlayerTile(tile.r, tile.g, tile.b, tile.type)
+        end
+    end
+end
+
+function setPlayerTile(r, g, b, type)
     player_tile = {r=r, g=g, b=b}
+    if type == "resistance" then
+        immunity = 4
+    end
 end
 
 function changeColor()
     if player_state == "start" then return end
+    if immunity > 0 then immunity = immunity - 1; return end
     p.r = (p.r + player_tile.r)*0.5
     p.g = (p.g + player_tile.g)*0.5
     p.b = (p.b + player_tile.b)*0.5
@@ -114,10 +134,16 @@ function colorsMatch()
            withinLimit(p.b, e.b)
 end
 
+function colorWhite()
+    return withinLimit(p.r, 255) and
+           withinLimit(p.g, 255) and
+           withinLimit(p.b, 255)
+end
+
 function canExit()
     if (p.x == e.x and
-        p.y == e.y)  and 
-        colorsMatch() then
+        p.y == e.y)  and
+        (colorsMatch() or colorWhite()) then
         return true
     end
     return false
@@ -136,31 +162,36 @@ function love.keypressed(key)
     if key == "up" and p.y > 0 then
         p.y = p.y - tile_size
         player_state = "moving"
+        getPlayerTile()
         changeColor()
     end
     if key == "down" and p.y < (grids-1)*tile_size then
         p.y = p.y + tile_size
         player_state = "moving"
+        getPlayerTile()
         changeColor()
     end
     if key == "right" and p.x < (grids-1)*tile_size then
         p.x = p.x + tile_size
         player_state = "moving"
+        getPlayerTile()
         changeColor()
     end
     if key == "left" and p.x > 0 then
         p.x = p.x - tile_size
         player_state = "moving"
+        getPlayerTile()
         changeColor()
     end
     if key == "l" and player_state == "can_exit" then
-        loadNextLevel(level2)
+        level = level + 1
+        loadNextLevel(levels[level])
     end
 end
 
 function love.load()
     grid = createGrid(grids, tile_size)
-    tile_set = createTiles(grid, level1)
+    tile_set = createTiles(grid, levels[level])
 end
 
 function love.update(dt)
@@ -183,15 +214,13 @@ function love.draw()
         if tile.type == "exit" then
             love.graphics.print("exit", tile.x, tile.y)
         end
-
-        if p.x == tile.x and
-            p.y == tile.y then
-            setPlayerTile(tile.r, tile.g, tile.b)
-        end
     end
 
     love.graphics.setColor(p.r, p.g, p.b)
     love.graphics.rectangle("fill", p.x, p.y, tile_size, tile_size)
+
+    love.graphics.setColor(0,0,0)
+    love.graphics.print(immunity, p.x, p.y)
 
     if player_state == "can_exit" then
         love.graphics.setColor(0,0,0)
