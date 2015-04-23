@@ -185,11 +185,16 @@ function love.keypressed(key)
     end
     if key == "l" and player_state == "can_exit" then
         level = level + 1
-        loadNextLevel(levels[level])
+        if level > #levels then
+            state = "gameover"
+        else
+            loadNextLevel(levels[level])
+        end
     end
 end
 
 function love.load()
+    love.graphics.setBackgroundColor(115, 115, 115)
     grid = createGrid(grids, tile_size)
     tile_set = createTiles(grid, levels[level])
 end
@@ -204,26 +209,32 @@ function love.update(dt)
 end
 
 function love.draw()
-    for _, tile in ipairs(tile_set) do
-        love.graphics.setColor(tile.r, tile.g, tile.b)
-        love.graphics.rectangle("fill", tile.x, tile.y, tile_size, tile_size)
-
+    if state == "gameover" then
         love.graphics.setColor(0,0,0)
-        love.graphics.rectangle("line", tile.x, tile.y, tile_size, tile_size)
+        love.graphics.print("Game over", grids*0.33*tile_size, grids*0.5*tile_size)
+        love.graphics.print("press esc to leave game", grids*0.33*tile_size, grids*0.5*tile_size+10)
+    else
+        for _, tile in ipairs(tile_set) do
+            love.graphics.setColor(tile.r, tile.g, tile.b)
+            love.graphics.rectangle("fill", tile.x, tile.y, tile_size, tile_size)
 
-        if tile.type == "exit" then
-            love.graphics.print("exit", tile.x, tile.y)
+            love.graphics.setColor(0,0,0)
+            love.graphics.rectangle("line", tile.x, tile.y, tile_size, tile_size)
+
+            if tile.type == "exit" then
+                love.graphics.print("exit", tile.x, tile.y)
+            end
         end
-    end
 
-    love.graphics.setColor(p.r, p.g, p.b)
-    love.graphics.rectangle("fill", p.x, p.y, tile_size, tile_size)
+        love.graphics.setColor(p.r, p.g, p.b)
+        love.graphics.rectangle("fill", p.x, p.y, tile_size, tile_size)
 
-    love.graphics.setColor(0,0,0)
-    love.graphics.print(immunity, p.x, p.y)
-
-    if player_state == "can_exit" then
         love.graphics.setColor(0,0,0)
-        love.graphics.print("E", p.x, p.y)
+        love.graphics.print(immunity, p.x, p.y)
+
+        if player_state == "can_exit" then
+            love.graphics.setColor(0,0,0)
+            love.graphics.print("E", p.x, p.y)
+        end
     end
 end
