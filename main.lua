@@ -60,11 +60,11 @@ local level2 = {2,2,"e",2,2,
                 2,2,5,2,2,
                 2,2,"@",2,2}
 
-local level3 = {1,2,"e",1,2,
+local level3 = {1,2,"e",2,2,
                 2,2,2,2,2,
-                1,2,6,2,2,
+                1,2,2,2,2,
                 2,2,2,2,2,
-                1,2,"@",2,2}
+                1,2,6,"@",2}
 
 local levels = {level1, level2, level3}
 local level = 1
@@ -130,7 +130,7 @@ function setPlayerTile(r, g, b, type)
     end
     if type == "speed" then
         speed = 2
-        speed_duration = 3
+        speed_duration = 4
     end
 end
 
