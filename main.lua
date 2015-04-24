@@ -61,6 +61,8 @@ local tile_set = {}
 local state = "game"
 local player_state = "start"
 
+local debug = false
+
 function createGrid(n, ts)
     local grid = {}
     for i = 0,n-1 do
@@ -191,6 +193,9 @@ function love.keypressed(key)
             loadNextLevel(levels[level])
         end
     end
+    if key == "d" then
+        debug = not debug
+    end
 end
 
 function love.load()
@@ -230,7 +235,7 @@ function love.draw()
         love.graphics.rectangle("fill", p.x, p.y, tile_size, tile_size)
 
         love.graphics.setColor(0,0,0)
-        love.graphics.print(immunity, p.x, p.y)
+        if debug then love.graphics.print(immunity, p.x, p.y + (tile_size-15)) end
 
         if player_state == "can_exit" then
             love.graphics.setColor(0,0,0)
