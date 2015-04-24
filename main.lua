@@ -179,10 +179,14 @@ function canExit()
     return false
 end
 
-function loadNextLevel(l)
+function loadLevel(l)
     grid = createGrid(grids, tile_size)
     tile_set = createTiles(grid, l)
     player_state = "start"
+end
+
+function restartLevel()
+    loadLevel(levels[level])
 end
 
 function love.keypressed(key)
@@ -218,8 +222,11 @@ function love.keypressed(key)
         if level > #levels then
             state = "gameover"
         else
-            loadNextLevel(levels[level])
+            loadLevel(levels[level])
         end
+    end
+    if key == "r" then
+        restartLevel()
     end
     if key == "d" then
         debug = not debug
