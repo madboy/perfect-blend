@@ -35,11 +35,17 @@ local tiles = {["e"]={type="exit",
                [5]={type="resistance",
                     r=c.white.r,
                     g=c.white.g,
-                    b=c.white.b}}
+                    b=c.white.b},
+               [6]={type="speed",
+                    r=c.red_violet.r,
+                    g=c.red_violet.g,
+                    b=c.red_violet.b}}
 local grid = {}
 local p = {}
 local player_tile = {}
 local immunity = 0
+local speed = 1
+local speed_duration = 0
 local e = {}
 
 local level1 = {2,1,"e",1,2,
@@ -54,7 +60,13 @@ local level2 = {2,2,"e",2,2,
                 2,2,5,2,2,
                 2,2,"@",2,2}
 
-local levels = {level1, level2}
+local level3 = {1,2,"e",1,2,
+                2,2,2,2,2,
+                1,2,6,2,2,
+                2,2,2,2,2,
+                1,2,"@",2,2}
+
+local levels = {level1, level2, level3}
 local level = 1
 local tile_set = {}
 
@@ -116,11 +128,20 @@ function setPlayerTile(r, g, b, type)
     if type == "resistance" then
         immunity = 4
     end
+    if type == "speed" then
+        speed = 2
+        speed_duration = 3
+    end
 end
 
 function changeColor()
     if player_state == "start" then return end
     if immunity > 0 then immunity = immunity - 1; return end
+    if speed_duration > 0 then
+        speed_duration = speed_duration - 1
+    elseif speed_duration == 0 then
+        speed = 1
+    end
     p.r = (p.r + player_tile.r)*0.5
     p.g = (p.g + player_tile.g)*0.5
     p.b = (p.b + player_tile.b)*0.5
@@ -140,6 +161,13 @@ function colorWhite()
     return withinLimit(p.r, 255) and
            withinLimit(p.g, 255) and
            withinLimit(p.b, 255)
+end
+
+function printTileColor(r, g, b, x, y)
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.print(string.format("%d", r), x + (tile_size - 25), y + (tile_size - 45))
+    love.graphics.print(string.format("%d", g), x + (tile_size - 25), y + (tile_size - 30))
+    love.graphics.print(string.format("%d", b), x + (tile_size - 25), y + (tile_size - 15))
 end
 
 function canExit()
@@ -162,25 +190,25 @@ function love.keypressed(key)
         love.event.quit()
     end
     if key == "up" and p.y > 0 then
-        p.y = p.y - tile_size
+        p.y = p.y - tile_size * speed
         player_state = "moving"
         getPlayerTile()
         changeColor()
     end
     if key == "down" and p.y < (grids-1)*tile_size then
-        p.y = p.y + tile_size
+        p.y = p.y + tile_size * speed
         player_state = "moving"
         getPlayerTile()
         changeColor()
     end
     if key == "right" and p.x < (grids-1)*tile_size then
-        p.x = p.x + tile_size
+        p.x = p.x + tile_size * speed
         player_state = "moving"
         getPlayerTile()
         changeColor()
     end
     if key == "left" and p.x > 0 then
-        p.x = p.x - tile_size
+        p.x = p.x - tile_size * speed
         player_state = "moving"
         getPlayerTile()
         changeColor()
@@ -228,6 +256,7 @@ function love.draw()
 
             if tile.type == "exit" then
                 love.graphics.print("exit", tile.x, tile.y)
+                if debug then printTileColor(tile.r, tile.g, tile.b, tile.x, tile.y) end
             end
         end
 
@@ -236,6 +265,8 @@ function love.draw()
 
         love.graphics.setColor(0,0,0)
         if debug then love.graphics.print(immunity, p.x, p.y + (tile_size-15)) end
+        if debug then love.graphics.print(speed, p.x, p.y + (tile_size-30)) end
+        if debug then printTileColor(p.r, p.g, p.b, p.x, p.y) end
 
         if player_state == "can_exit" then
             love.graphics.setColor(0,0,0)
