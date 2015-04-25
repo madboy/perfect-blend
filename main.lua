@@ -66,7 +66,13 @@ local level3 = {1,2,"e",2,2,
                 2,2,2,2,2,
                 1,2,6,"@",2}
 
-local levels = {level1, level2, level3}
+local level4 = {2,2,"e",2,2,
+                2,2,2,2,2,
+                2,2,1,2,6,
+                2,2,2,2,2,
+                2,2,"@",2,5}
+
+local levels = {level1, level2, level3, level4}
 local level = 1
 local tile_set = {}
 
