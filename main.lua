@@ -183,6 +183,9 @@ function loadLevel(l)
     grid = createGrid(grids, tile_size)
     tile_set = createTiles(grid, l)
     player_state = "start"
+    immunity = 0
+    speed = 1
+    speed_duration = 0
 end
 
 function restartLevel()
