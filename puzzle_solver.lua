@@ -1,5 +1,7 @@
 local puzzle_solver = {}
 
+local l = require("list")
+
 local c = {yellow = {r=255, g=255, b=0},
           yellow_orange = {r=255, g=204, b=0},
           green_yellow = {r=160, g=255, b=32},
@@ -58,20 +60,93 @@ function colorsMatch(p)
            withinLimit(p.b, exit.b)
 end
 
+-- only works for 1d grid at the moment
+function getGridNumbers(grid)
+    local gn = {}
+    local gd = {}
+    for i in ipairs(grid) do
+        local describer = i+10
+        table.insert(gn, describer)
+        if i == 1 then
+            gd[describer] = {describer+1}
+        elseif i == #grid then
+            gd[describer] = {describer-1}
+        else
+            gd[describer] ={describer-1, describer+1}
+        end
+    end
+    return gn, gd
+end
+
+function getPlayerPosition(grid)
+    local pos = 0
+    for i, t in pairs(grid) do
+        if t == "@" then
+            pos = i
+            return pos
+        end
+    end
+    return pos
+end
+
+function getTile(n, gn, grid)
+    for i,v in ipairs(gn) do
+        if v == n then
+            local tile_id = grid[i]
+            return tiles[tile_id], i
+        end
+    end
+    return nil
+end
+
+-- for now this will be a walk forward strategy
+-- only considering another way if we cannot go any
+-- further
 function puzzle_solver.walk(player, tile)
     puzzle_solver.changeColor(player, tile)
 end
 
+function printNestedTable(t)
+    for i,v in ipairs(t) do
+        print(table.unpack(v))
+    end
+end
+
 function puzzle_solver.solvable(grid, grid_size, player)
+    -- pre checks to see if base criteria for the grid
+    -- is fulfilled
     if next(grid) == nil then
         return false
     elseif #grid ~= grid_size then
         return false
     end
-    for i = 2,grid_size do
-        local tile_id = grid[i]
-        local tile = tiles[tile_id]
+    local position = getPlayerPosition(grid)
+    if position == 0 then
+        return false
+    end
+
+    local grid_numbers = {}
+    local grid_describer = {}
+    grid_numbers, grid_describer = getGridNumbers(grid)
+    local steps = 0
+
+    while steps < 10 and (not colorsMatch(player)) do
+        steps = steps + 1
+        local gn = grid_numbers[position]
+        local paths = grid_describer[gn]
+        local destination = l.max(paths)
+        local tile, idx = getTile(destination, grid_numbers, grid)
+
         puzzle_solver.walk(player, tile)
+
+        --[[
+        if idx < position then
+            print("Hey, I'm going backwards")
+        else
+            print("Ohh, fwd it is")
+        end
+        ]]
+        position = idx
     end
     return colorsMatch(player)
 end
