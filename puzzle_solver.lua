@@ -116,9 +116,10 @@ function puzzle_solver.solvable(grid, grid_size, player)
     -- pre checks to see if base criteria for the grid
     -- is fulfilled
     if next(grid) == nil then
-        return false
-    elseif #grid ~= grid_size then
-        return false
+        return false, "empty grid"
+    elseif (#grid % grid_size) ~= 0 then
+    -- elseif #grid ~= grid_size then
+        return false, "grid size mismatch"
     end
     local position = getPlayerPosition(grid)
     if position == 0 then
