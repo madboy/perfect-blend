@@ -42,6 +42,12 @@ function test_puzzle_solver.test_row_length_mismatch()
     return t.assert_equal(false, result)
 end
 
+function test_puzzle_solver.test_invalid_tiles()
+    local grid = {"@", 1, 34}
+    local result = ps.solvable(grid, 3, {})
+    return t.assert_equal(false, result)
+end
+
 t.run_tests(test_puzzle_solver)
 
 return test_puzzle_solver

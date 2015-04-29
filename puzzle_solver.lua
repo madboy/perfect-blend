@@ -118,12 +118,17 @@ function puzzle_solver.solvable(grid, grid_size, player)
     if next(grid) == nil then
         return false, "empty grid"
     elseif (#grid % grid_size) ~= 0 then
-    -- elseif #grid ~= grid_size then
         return false, "grid size mismatch"
     end
     local position = getPlayerPosition(grid)
     if position == 0 then
-        return false
+        return false, "no player present"
+    end
+    local tile_index = l.get_indexes(tiles)
+    for _,v in ipairs(grid) do
+        if not l.member(v, tile_index) then
+            return false, "unknown tiles"
+        end
     end
 
     local grid_numbers = {}
