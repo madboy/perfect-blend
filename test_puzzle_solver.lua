@@ -8,6 +8,13 @@ function test_puzzle_solver.test_solvable()
     return t.assert_equal(true, result)
 end
 
+function test_puzzle_solver.test_solvable_two_rows()
+    local player = {r=255, g=255, b=255}
+    local result = ps.solvable({"@", 1, 1, 1, 1, "e",
+                                2, 2, 2, 2, 2, 2}, 6, player)
+    return t.assert_equal(true, result)
+end
+
 function test_puzzle_solver.test_solvable_back_and_forth()
     local player = {r=255, g=255, b=255}
     local result = ps.solvable({"@", 2, 1, 1, 1, "e"}, 6, player)
