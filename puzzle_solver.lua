@@ -2,6 +2,8 @@ local puzzle_solver = {}
 
 local l = require("list")
 
+local debug = false
+
 local c = {yellow = {r=255, g=255, b=0},
           yellow_orange = {r=255, g=204, b=0},
           green_yellow = {r=160, g=255, b=32},
@@ -112,7 +114,7 @@ function printNestedTable(t)
     end
 end
 
-function puzzle_solver.solvable(grid, grid_size, player)
+function preChecks(grid, grid_size, player, position)
     -- pre checks to see if base criteria for the grid
     -- is fulfilled
     if next(grid) == nil then
@@ -120,7 +122,6 @@ function puzzle_solver.solvable(grid, grid_size, player)
     elseif (#grid % grid_size) ~= 0 then
         return false, "grid size mismatch"
     end
-    local position = getPlayerPosition(grid)
     if position == 0 then
         return false, "no player present"
     end
@@ -130,31 +131,41 @@ function puzzle_solver.solvable(grid, grid_size, player)
             return false, "unknown tiles"
         end
     end
+    return true
+end
 
-    local grid_numbers = {}
-    local grid_describer = {}
-    grid_numbers, grid_describer = getGridNumbers(grid)
-    local steps = 0
+function puzzle_solver.solvable(grid, grid_size, player)
+    local position = getPlayerPosition(grid)
+    local precheck, msg = preChecks(grid, grid_size, player, position)
+    if  precheck then
+        local grid_numbers = {}
+        local grid_describer = {}
+        grid_numbers, grid_describer = getGridNumbers(grid)
+        local steps = 0
 
-    while steps < 10 and (not colorsMatch(player)) do
-        steps = steps + 1
-        local gn = grid_numbers[position]
-        local paths = grid_describer[gn]
-        local destination = l.max(paths)
-        local tile, idx = getTile(destination, grid_numbers, grid)
+        while steps < 10 and (not colorsMatch(player)) do
+            steps = steps + 1
+            local gn = grid_numbers[position]
+            local paths = grid_describer[gn]
+            local destination = l.max(paths)
+            local tile, idx = getTile(destination, grid_numbers, grid)
 
-        puzzle_solver.walk(player, tile)
+            puzzle_solver.walk(player, tile)
 
-        --[[
-        if idx < position then
+            --[[
+            if idx < position then
             print("Hey, I'm going backwards")
-        else
+            else
             print("Ohh, fwd it is")
+            end
+            ]]
+            position = idx
         end
-        ]]
-        position = idx
+        return colorsMatch(player)
+    else
+        if debug then print(msg) end
+        return false
     end
-    return colorsMatch(player)
 end
 
 return puzzle_solver
