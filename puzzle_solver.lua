@@ -63,7 +63,7 @@ function colorsMatch(p)
 end
 
 -- only works for 1d grid at the moment
-function getGridNumbers(grid, grid_size)
+function puzzle_solver.getGridNumbers(grid, grid_size)
     local gn = {}
     local gd = {}
     local rows = #grid / grid_size
@@ -76,11 +76,12 @@ function getGridNumbers(grid, grid_size)
             elseif i == #grid then
                 gd[describer] = {describer-1}
             else
-                gd[describer] ={describer-1, describer+1}
+                gd[describer] = {describer-1, describer+1}
             end
+            --print(describer, table.unpack(gd[describer]))
         end
     end
-    print(table.unpack(gn))
+    --print(table.unpack(gn))
     return gn, gd
 end
 
@@ -144,7 +145,7 @@ function puzzle_solver.solvable(grid, grid_size, player)
     if  precheck then
         local grid_numbers = {}
         local grid_describer = {}
-        grid_numbers, grid_describer = getGridNumbers(grid, grid_size)
+        grid_numbers, grid_describer = puzzle_solver.getGridNumbers(grid, grid_size)
         local steps = 0
 
         while steps < 10 and (not colorsMatch(player)) do

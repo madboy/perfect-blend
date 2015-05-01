@@ -55,6 +55,15 @@ function test_puzzle_solver.test_invalid_tiles()
     return t.assert_equal(false, result)
 end
 
+function test_puzzle_solver.test_single_row_grid()
+    local grid = {1,1,1}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    return t.assert_equal({11,12,13}, numbers) and
+           t.assert_equal({12}, describer[11]) and
+           t.assert_equal({11, 13}, describer[12]) and
+           t.assert_equal({12}, describer[13])
+end
+
 t.run_tests(test_puzzle_solver)
 
 return test_puzzle_solver
