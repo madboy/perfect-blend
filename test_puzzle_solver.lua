@@ -64,6 +64,13 @@ function test_puzzle_solver.test_single_row_grid()
            t.assert_equal({12}, describer[13])
 end
 
+function test_puzzle_solver.test_two_row_grid()
+    local grid = {1,1,1,2,2,2}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    -- return t.assert_equal({11,12,13,21,22,23}, numbers)
+    return t.assert_equal({12, 21}, describer[11])
+end
+
 t.run_tests(test_puzzle_solver)
 
 return test_puzzle_solver

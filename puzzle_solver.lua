@@ -70,18 +70,21 @@ function puzzle_solver.getGridNumbers(grid, grid_size)
     for row = 1,rows do
         for i = 1,grid_size do
             local describer = i+10*row
+            local description = {}
             table.insert(gn, describer)
             if i == 1 then
-                gd[describer] = {describer+1}
-            elseif i == #grid then
+                table.insert(description, describer+1)
+                if rows > 1 and row == 1 then
+                    table.insert(description, describer+10)
+                end
+                gd[describer] = description
+            elseif i == (#grid / rows) then
                 gd[describer] = {describer-1}
             else
                 gd[describer] = {describer-1, describer+1}
             end
-            --print(describer, table.unpack(gd[describer]))
         end
     end
-    --print(table.unpack(gn))
     return gn, gd
 end
 
