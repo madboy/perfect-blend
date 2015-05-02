@@ -76,12 +76,21 @@ function puzzle_solver.getGridNumbers(grid, grid_size)
                 table.insert(description, describer+1)
                 if rows > 1 and row == 1 then
                     table.insert(description, describer+10)
+                elseif rows > 1 and row == rows then
+                    table.insert(description, describer-10)
                 end
                 gd[describer] = description
-            elseif i == (#grid / rows) then
+            elseif i == grid_size then
                 gd[describer] = {describer-1}
             else
-                gd[describer] = {describer-1, describer+1}
+                table.insert(description, describer-1)
+                table.insert(description, describer+1)
+                if rows > 1 then
+                    if row == 1 then
+                        table.insert(description, describer+10)
+                    end
+                end
+                gd[describer] = description
             end
         end
     end

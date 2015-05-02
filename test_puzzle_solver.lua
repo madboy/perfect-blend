@@ -10,8 +10,8 @@ end
 
 function test_puzzle_solver.test_solvable_two_rows()
     local player = {r=255, g=255, b=255}
-    local result = ps.solvable({"@", 1, 1, 1, 1, "e",
-                                2, 2, 2, 2, 2, 2}, 6, player)
+    local result = ps.solvable({"@", 1, 1, 1, 1, 1,
+                                2, 2, 2, 1, 1, "e"}, 6, player)
     return t.assert_equal(true, result)
 end
 
@@ -67,8 +67,10 @@ end
 function test_puzzle_solver.test_two_row_grid()
     local grid = {1,1,1,2,2,2}
     local numbers, describer = ps.getGridNumbers(grid, 3)
-    -- return t.assert_equal({11,12,13,21,22,23}, numbers)
-    return t.assert_equal({12, 21}, describer[11])
+    -- return t.assert_equal({11,12,13,21,22,23}, numbers) and
+    -- t.assert_equal({12, 21}, describer[11]) and
+    -- t.assert_equal({22, 11}, describer[21]) and
+    return t.assert_equal({11, 13, 22}, describer[12])
 end
 
 t.run_tests(test_puzzle_solver)
