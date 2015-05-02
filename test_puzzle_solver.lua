@@ -76,6 +76,18 @@ function test_puzzle_solver.test_top_left_corner()
     return t.assert_equal({12, 21}, describer[11])
 end
 
+function test_puzzle_solver.test_top_right_corner()
+    local grid = {1,1,1,2,2,2,3,3,3}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    return t.assert_equal({12, 23}, describer[13])
+end
+
+function test_puzzle_solver.test_bottom_left_corner()
+    local grid = {1,1,1,2,2,2,3,3,3}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    return t.assert_equal({32,21}, describer[31])
+end
+
 function test_puzzle_solver.test_bottom_right_corner()
     local grid = {1,1,1,2,2,2,3,3,3}
     local numbers, describer = ps.getGridNumbers(grid, 3)
