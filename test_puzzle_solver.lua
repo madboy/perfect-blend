@@ -64,13 +64,40 @@ function test_puzzle_solver.test_single_row_grid()
            t.assert_equal({12}, describer[13])
 end
 
-function test_puzzle_solver.test_two_row_grid()
-    local grid = {1,1,1,2,2,2}
+function test_puzzle_solver.test_numbering()
+    local grid = {1,1,1,2,2,2,3,3,3}
     local numbers, describer = ps.getGridNumbers(grid, 3)
-    -- return t.assert_equal({11,12,13,21,22,23}, numbers) and
-    -- t.assert_equal({12, 21}, describer[11]) and
-    -- t.assert_equal({22, 11}, describer[21]) and
+    return t.assert_equal({11,12,13,21,22,23,31,32,33}, numbers)
+end
+
+function test_puzzle_solver.test_top_left_corner()
+    local grid = {1,1,1,2,2,2,3,3,3}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    return t.assert_equal({12, 21}, describer[11])
+end
+
+function test_puzzle_solver.test_bottom_right_corner()
+    local grid = {1,1,1,2,2,2,3,3,3}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    return t.assert_equal({32,23}, describer[33])
+end
+
+function test_puzzle_solver.test_edge_middle()
+    local grid = {1,1,1,2,2,2,3,3,3}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    return t.assert_equal({22, 11, 31}, describer[21])
+end
+
+function test_puzzle_solver.test_top_middle()
+    local grid = {1,1,1,2,2,2,3,3,3}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
     return t.assert_equal({11, 13, 22}, describer[12])
+end
+
+function test_puzzle_solver.test_middle_middle()
+    local grid = {1,1,1,2,2,2,3,3,3}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    return t.assert_equal({21, 23, 12, 32}, describer[22])
 end
 
 t.run_tests(test_puzzle_solver)
