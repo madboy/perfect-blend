@@ -74,45 +74,23 @@ function puzzle_solver.getGridNumbers(grid, grid_size)
             table.insert(gn, describer)
             if i == 1 then
                 table.insert(description, describer+1)
-                if rows > 1 then
-                    if row == 1 then
-                        table.insert(description, describer+10)
-                    elseif row == rows then
-                        table.insert(description, describer-10)
-                    else
-                        table.insert(description, describer-10)
-                        table.insert(description, describer+10)
-                    end
-                end
-                gd[describer] = description
             elseif i == grid_size then
                 table.insert(description, describer-1)
-                if rows > 1 then
-                    if row == 1 then
-                        table.insert(description, describer+10)
-                    elseif row == rows then
-                        table.insert(description, describer-10)
-                    else
-                        table.insert(description, describer-10)
-                        table.insert(description, describer+10)
-                    end
-                end
-                gd[describer] = description
             else
                 table.insert(description, describer-1)
                 table.insert(description, describer+1)
-                if rows > 1 then
-                    if row == 1 then
-                        table.insert(description, describer+10)
-                    elseif row == rows then
-                        table.insert(description, describer-10)
-                    else
-                        table.insert(description, describer-10)
-                        table.insert(description, describer+10)
-                    end
-                end
-                gd[describer] = description
             end
+            if rows > 1 then
+                if row == 1 then
+                    table.insert(description, describer+10)
+                elseif row == rows then
+                    table.insert(description, describer-10)
+                else
+                    table.insert(description, describer-10)
+                    table.insert(description, describer+10)
+                end
+            end
+            gd[describer] = description
         end
     end
     return gn, gd
