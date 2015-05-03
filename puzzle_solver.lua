@@ -62,8 +62,9 @@ function colorsMatch(p)
            withinLimit(p.b, exit.b)
 end
 
--- only works for 1d grid at the moment
 function puzzle_solver.getGridNumbers(grid, grid_size)
+    -- generates a numbering for each tile in the grid, gn
+    -- for each tile we save which tiles are accessible from it, gd
     local gn = {}
     local gd = {}
     local rows = #grid / grid_size
@@ -96,15 +97,23 @@ function puzzle_solver.getGridNumbers(grid, grid_size)
     return gn, gd
 end
 
-function getPlayerPosition(grid)
+function getMarkerPosition(grid, marker)
     local pos = 0
     for i, t in pairs(grid) do
-        if t == "@" then
+        if t == marker then
             pos = i
             return pos
         end
     end
     return pos
+end
+
+function getPlayerPosition(grid)
+    return getMarkerPosition(grid, "@")
+end
+
+function getExitPosition(grid)
+    return getMarkerPosition(grid, "e")
 end
 
 function getTile(n, gn, grid)
@@ -130,7 +139,7 @@ function printNestedTable(t)
     end
 end
 
-function preChecks(grid, grid_size, player, position)
+function preChecks(grid, grid_size)
     -- pre checks to see if base criteria for the grid
     -- is fulfilled
     if next(grid) == nil then
@@ -138,8 +147,11 @@ function preChecks(grid, grid_size, player, position)
     elseif (#grid % grid_size) ~= 0 then
         return false, "grid size mismatch"
     end
-    if position == 0 then
+    if getPlayerPosition(grid) == 0 then
         return false, "no player present"
+    end
+    if getExitPosition(grid) == 0 then
+        return false, "no exit present"
     end
     local tile_index = l.get_indexes(tiles)
     for _,v in ipairs(grid) do
@@ -152,7 +164,7 @@ end
 
 function puzzle_solver.solvable(grid, grid_size, player)
     local position = getPlayerPosition(grid)
-    local precheck, msg = preChecks(grid, grid_size, player, position)
+    local precheck, msg = preChecks(grid, grid_size)
     if  precheck then
         local grid_numbers = {}
         local grid_describer = {}
