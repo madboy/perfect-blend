@@ -101,8 +101,7 @@ function getMarkerPosition(grid, marker)
     local pos = 0
     for i, t in pairs(grid) do
         if t == marker then
-            pos = i
-            return pos
+            return i
         end
     end
     return pos
@@ -117,13 +116,10 @@ function getExitPosition(grid)
 end
 
 function getTile(n, gn, grid)
-    for i,v in ipairs(gn) do
-        if v == n then
-            local tile_id = grid[i]
-            return tiles[tile_id], i
-        end
-    end
-    return nil
+    local i = getMarkerPosition(gn, n)
+    assert(i ~= 0, "tile not found: " .. n)
+    local tile_id = grid[i]
+    return tiles[tile_id], i
 end
 
 -- for now this will be a walk forward strategy
