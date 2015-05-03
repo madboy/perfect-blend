@@ -94,10 +94,16 @@ function test_puzzle_solver.test_bottom_right_corner()
     return t.assert_equal({32,23}, describer[33])
 end
 
-function test_puzzle_solver.test_edge_middle()
+function test_puzzle_solver.test_left_edge_middle()
     local grid = {1,1,1,2,2,2,3,3,3}
     local numbers, describer = ps.getGridNumbers(grid, 3)
     return t.assert_equal({22, 11, 31}, describer[21])
+end
+
+function test_puzzle_solver.test_right_edge_middle()
+    local grid = {1,1,1,2,2,2,3,3,3}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    return t.assert_equal({22, 13, 33}, describer[23])
 end
 
 function test_puzzle_solver.test_top_middle()
@@ -112,6 +118,11 @@ function test_puzzle_solver.test_middle_middle()
     return t.assert_equal({21, 23, 12, 32}, describer[22])
 end
 
+function test_puzzle_solver.test_bottom_middle()
+    local grid = {1,1,1,2,2,2,3,3,3}
+    local numbers, describer = ps.getGridNumbers(grid, 3)
+    return t.assert_equal({31, 33, 22}, describer[32])
+end
 t.run_tests(test_puzzle_solver)
 
 return test_puzzle_solver
