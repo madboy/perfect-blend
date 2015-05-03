@@ -122,6 +122,20 @@ function getTile(n, gn, grid)
     return tiles[tile_id], i
 end
 
+function getNextStep(pos, paths)
+    -- returns the index of the next step
+    -- we should take
+    -- ? can we exit ?
+    -- l.member(exit, paths) and colorsMatch()
+    -- if so go to the exit
+    -- ? get closer to the exit ?
+    -- min(paths - exit)
+    -- ? can we get closer to exit color ?
+    -- min(changeColor paths - exit)
+    -- ? go in random direction ?
+    -- random(paths)
+end
+
 -- for now this will be a walk forward strategy
 -- only considering another way if we cannot go any
 -- further
