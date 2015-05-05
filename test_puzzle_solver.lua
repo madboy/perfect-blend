@@ -122,7 +122,7 @@ end
 function test_puzzle_solver.test_get_next_step_can_exit()
     local grid = {1, "e", 1, "@"}
     local numbers, describer = ps.getGridNumbers(grid, 2)
-    return t.assert_equal(12, ps.getNextStep(4, 2, numbers, describer))
+    return t.assert_equal(12, ps.getNextStep({r=255, g=255, b=255}, 4, 2, numbers, describer))
 end
 
 t.run_tests(test_puzzle_solver)

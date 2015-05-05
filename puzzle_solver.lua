@@ -46,10 +46,19 @@ local tiles = {["e"]={type="exit",
 
 local exit = tiles["e"]
 
+function getNewColor(current, new)
+    local mix = {r=nil, g=nil, b=nil}
+    mix.r = (current.r + new.r) * 0.5
+    mix.g = (current.g + new.g) * 0.5
+    mix.b = (current.b + new.b) * 0.5
+    return mix
+end
+
 function puzzle_solver.changeColor(p, tile)
-    p.r = (p.r + tile.r)*0.5
-    p.g = (p.g + tile.g)*0.5
-    p.b = (p.b + tile.b)*0.5
+    local new = getNewColor(p, tile)
+    p.r = new.r
+    p.g = new.g
+    p.b = new.b
 end
 
 function withinLimit(v1, v2)
@@ -122,18 +131,29 @@ function getTile(n, gn, grid)
     return tiles[tile_id], i
 end
 
-function puzzle_solver.getNextStep(pos, exit, grid_numbers, grid_describer)
+function puzzle_solver.getNextStep(player, pos, exit, grid_numbers, grid_describer)
+    -- returns the index of the next step
+    -- we should take
     local gn = grid_numbers[pos]
     local en = grid_numbers[exit]
     local paths = grid_describer[gn]
-    -- returns the index of the next step
-    -- we should take
-    -- ? can we exit ?
+
+    -- if the exit is in our paths then we should go there
+    -- as this both let's us exit and takes us closer
+    -- to the exit color
     for _, path in pairs(paths) do
         if path == en then
             return path
         end
     end
+
+    -- checking if the next color will be closer to the exit
+    -- color is a hassle at the moment. the whole grid description
+    -- makes it super hard. Fix it first!
+    --local closest_color_match = 0
+    --for _, path in pairs(paths) do
+    --    puzzle_solver.changeColor(player, tile)
+    --end
     -- l.member(exit, paths) and colorsMatch()
     -- if so go to the exit
     -- ? get closer to the exit ?
@@ -194,7 +214,7 @@ function puzzle_solver.solvable(grid, grid_size, player)
 
         while steps < 10 and (not colorsMatch(player)) do
             steps = steps + 1
-            local destination = puzzle_solver.getNextStep(position, exit, grid_numbers, grid_describer)
+            local destination = puzzle_solver.getNextStep(player, position, exit, grid_numbers, grid_describer)
             local tile, idx = getTile(destination, grid_numbers, grid)
 
             puzzle_solver.walk(player, tile)
