@@ -111,6 +111,20 @@ function test_puzzle_solver.test_bottom_middle()
     return t.assert_equal({31, 33, 22}, describer[32])
 end
 
+function test_puzzle_solver.test_get_marker_position()
+    local grid = {1, "e", 1, "@"}
+    local player_position = ps.getMarkerPosition(grid, "@")
+    local exit_position = ps.getMarkerPosition(grid, "e")
+    return t.assert_equal(2, exit_position) and
+           t.assert_equal(4, player_position)
+end
+
+function test_puzzle_solver.test_get_next_step_can_exit()
+    local grid = {1, "e", 1, "@"}
+    local numbers, describer = ps.getGridNumbers(grid, 2)
+    return t.assert_equal(12, ps.getNextStep(4, 2, numbers, describer))
+end
+
 t.run_tests(test_puzzle_solver)
 
 return test_puzzle_solver

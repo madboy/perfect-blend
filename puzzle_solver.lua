@@ -97,7 +97,7 @@ function puzzle_solver.getGridNumbers(grid, grid_size)
     return gn, gd
 end
 
-function getMarkerPosition(grid, marker)
+function puzzle_solver.getMarkerPosition(grid, marker)
     local pos = 0
     for i, t in pairs(grid) do
         if t == marker then
@@ -108,26 +108,32 @@ function getMarkerPosition(grid, marker)
 end
 
 function getPlayerPosition(grid)
-    return getMarkerPosition(grid, "@")
+    return puzzle_solver.getMarkerPosition(grid, "@")
 end
 
 function getExitPosition(grid)
-    return getMarkerPosition(grid, "e")
+    return puzzle_solver.getMarkerPosition(grid, "e")
 end
 
 function getTile(n, gn, grid)
-    local i = getMarkerPosition(gn, n)
+    local i = puzzle_solver.getMarkerPosition(gn, n)
     assert(i ~= 0, "tile not found: " .. n)
     local tile_id = grid[i]
     return tiles[tile_id], i
 end
 
-function getNextStep(pos, grid_numbers, grid_describer)
+function puzzle_solver.getNextStep(pos, exit, grid_numbers, grid_describer)
     local gn = grid_numbers[pos]
+    local en = grid_numbers[exit]
     local paths = grid_describer[gn]
     -- returns the index of the next step
     -- we should take
     -- ? can we exit ?
+    for _, path in pairs(paths) do
+        if path == en then
+            return path
+        end
+    end
     -- l.member(exit, paths) and colorsMatch()
     -- if so go to the exit
     -- ? get closer to the exit ?
@@ -177,8 +183,9 @@ function preChecks(grid, grid_size)
 end
 
 function puzzle_solver.solvable(grid, grid_size, player)
-    local position = getPlayerPosition(grid)
     local precheck, msg = preChecks(grid, grid_size)
+    local position = getPlayerPosition(grid)
+    local exit = getExitPosition(grid)
     if precheck then
         local grid_numbers = {}
         local grid_describer = {}
@@ -187,7 +194,7 @@ function puzzle_solver.solvable(grid, grid_size, player)
 
         while steps < 10 and (not colorsMatch(player)) do
             steps = steps + 1
-            local destination = getNextStep(position, grid_numbers, grid_describer)
+            local destination = puzzle_solver.getNextStep(position, exit, grid_numbers, grid_describer)
             local tile, idx = getTile(destination, grid_numbers, grid)
 
             puzzle_solver.walk(player, tile)
