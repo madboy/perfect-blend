@@ -122,7 +122,9 @@ function getTile(n, gn, grid)
     return tiles[tile_id], i
 end
 
-function getNextStep(pos, paths)
+function getNextStep(pos, grid_numbers, grid_describer)
+    local gn = grid_numbers[pos]
+    local paths = grid_describer[gn]
     -- returns the index of the next step
     -- we should take
     -- ? can we exit ?
@@ -134,6 +136,8 @@ function getNextStep(pos, paths)
     -- min(changeColor paths - exit)
     -- ? go in random direction ?
     -- random(paths)
+    return l.max(paths)
+
 end
 
 -- for now this will be a walk forward strategy
@@ -175,7 +179,7 @@ end
 function puzzle_solver.solvable(grid, grid_size, player)
     local position = getPlayerPosition(grid)
     local precheck, msg = preChecks(grid, grid_size)
-    if  precheck then
+    if precheck then
         local grid_numbers = {}
         local grid_describer = {}
         grid_numbers, grid_describer = puzzle_solver.getGridNumbers(grid, grid_size)
@@ -183,20 +187,11 @@ function puzzle_solver.solvable(grid, grid_size, player)
 
         while steps < 10 and (not colorsMatch(player)) do
             steps = steps + 1
-            local gn = grid_numbers[position]
-            local paths = grid_describer[gn]
-            local destination = l.max(paths)
+            local destination = getNextStep(position, grid_numbers, grid_describer)
             local tile, idx = getTile(destination, grid_numbers, grid)
 
             puzzle_solver.walk(player, tile)
 
-            --[[
-            if idx < position then
-            print("Hey, I'm going backwards")
-            else
-            print("Ohh, fwd it is")
-            end
-            ]]
             position = idx
         end
         return colorsMatch(player)
