@@ -1,0 +1,4 @@
+[package]
+name = "puzzler"
+version = "0.1.0"
+authors = ["Kristofer Lindberg <k.lindberg@gmail.com>"]
