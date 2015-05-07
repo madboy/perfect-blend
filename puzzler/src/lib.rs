@@ -68,7 +68,6 @@ pub fn get_paths(p: i32) -> Vec<i32> {
 pub fn create_level(grid: [i32; 25], keys: [&'static str; 25]) -> HashMap<i32, &'static str> {
     let mut level: HashMap<i32, &'static str> = HashMap::new();
     for i in 0..25 {
-    //for g in &grid {
         level.insert(grid[i], keys[i]);
     }
     return level;
