@@ -4,6 +4,18 @@ pub fn blend_colors(c: [i32; 3], n: [i32; 3]) -> [i32; 3] {
     (c[2] + n[2]) / 2]
 }
 
+pub fn abs(v: i32) -> i32 {
+    if v < 0 {
+        -v
+    } else {
+        v
+    }
+}
+
+pub fn within_limit(v1: i32, v2: i32) -> bool {
+    abs(v1-v2) < 10
+}
+
 pub fn grid_numbering() -> [i32; 25] {
     let mut a = [0; 25];
     let mut row = 1;
@@ -53,6 +65,42 @@ mod test {
     fn blend_white_and_grey() {
         let r = blend_colors([255, 255, 255], [100, 100, 100]);
         assert_eq!([177, 177, 177], r);
+    }
+
+    #[test]
+    fn abs_for_negative() {
+        let r = abs(-10);
+        assert_eq!(10, r);
+    }
+
+    #[test]
+    fn abs_for_positive() {
+        let r = abs(2);
+        assert_eq!(2, r);
+    }
+
+    #[test]
+    fn abs_for_zero() {
+        let r = abs(0);
+        assert_eq!(0, r)
+    }
+
+    #[test]
+    fn within_the_allowed_limit() {
+        let r = within_limit(100, 109);
+        assert_eq!(true, r);
+    }
+
+    #[test]
+    fn within_the_allowed_limit2() {
+        let r = within_limit(100, 91);
+        assert_eq!(true, r);
+    }
+
+    #[test]
+    fn outside_limit() {
+        let r = within_limit(66, 83);
+        assert_eq!(false, r);
     }
 
     #[test]
