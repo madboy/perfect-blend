@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub fn blend_colors(c: [i32; 3], n: [i32; 3]) -> [i32; 3] {
     [(c[0] + n[0]) / 2,
     (c[1] + n[1]) / 2,
@@ -61,6 +63,15 @@ pub fn get_paths(p: i32) -> Vec<i32> {
         paths.push(p+10);
     }
     return paths;
+}
+
+pub fn create_level(grid: [i32; 25], keys: [&'static str; 25]) -> HashMap<i32, &'static str> {
+    let mut level: HashMap<i32, &'static str> = HashMap::new();
+    for i in 0..25 {
+    //for g in &grid {
+        level.insert(grid[i], keys[i]);
+    }
+    return level;
 }
 
 #[cfg(test)]
@@ -179,5 +190,18 @@ mod test {
         let r = get_paths(43);
         let expected = vec![42,44,33,53];
         assert_eq!(expected, r);
+    }
+
+    #[test]
+    fn create_a_level_with_lot_of_ground() {
+        let grid = grid_numbering();
+        let keys: [&'static str; 25] = ["e", "g", "g", "g", "g",
+                                        "g", "g", "g", "g", "g",
+                                        "g", "g", "g", "g", "g",
+                                        "g", "g", "g", "g", "g",
+                                        "g", "g", "g", "g", "g"];
+        let level = create_level(grid, keys);
+        assert_eq!(level.get(&11), Some(&"e"));
+        assert_eq!(level.get(&44), Some(&"g"));
     }
 }
