@@ -16,6 +16,12 @@ pub fn within_limit(v1: i32, v2: i32) -> bool {
     abs(v1-v2) < 10
 }
 
+pub fn colors_match(c1: [i32; 3], c2: [i32; 3]) -> bool {
+    within_limit(c1[0], c2[0]) &&
+    within_limit(c1[1], c2[1]) &&
+    within_limit(c1[2], c2[2])
+}
+
 pub fn grid_numbering() -> [i32; 25] {
     let mut a = [0; 25];
     let mut row = 1;
@@ -100,6 +106,18 @@ mod test {
     #[test]
     fn outside_limit() {
         let r = within_limit(66, 83);
+        assert_eq!(false, r);
+    }
+
+    #[test]
+    fn mathching_colors() {
+        let r = colors_match([120, 130, 140], [125, 125, 143]);
+        assert_eq!(true, r);
+    }
+
+    #[test]
+    fn mismathching_colors() {
+        let r = colors_match([115, 130, 140], [125, 125, 143]);
         assert_eq!(false, r);
     }
 
