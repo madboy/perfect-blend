@@ -1,5 +1,18 @@
 use std::collections::HashMap;
 
+#[derive(Debug)]
+pub struct Tile {
+    name: char,
+    color: [i32; 3],
+    paths: Vec<i32>
+}
+
+impl Tile {
+    fn new(name: char, color: [i32; 3], paths: Vec<i32>) -> Tile {
+        Tile { name: name, color: color, paths: paths}
+    }
+}
+
 pub fn blend_colors(c: [i32; 3], n: [i32; 3]) -> [i32; 3] {
     [(c[0] + n[0]) / 2,
     (c[1] + n[1]) / 2,
@@ -65,10 +78,10 @@ pub fn get_paths(p: i32) -> Vec<i32> {
     return paths;
 }
 
-pub fn create_level(grid: [i32; 25], keys: [&'static str; 25]) -> HashMap<i32, &'static str> {
-    let mut level: HashMap<i32, &'static str> = HashMap::new();
+pub fn create_level(grid: [i32; 25], keys: [char; 25]) -> HashMap<i32, Tile> {
+    let mut level: HashMap<i32, Tile> = HashMap::new();
     for i in 0..25 {
-        level.insert(grid[i], keys[i]);
+        level.insert(grid[i], Tile::new(keys[i], [1,1,1], get_paths(grid[i])));
     }
     return level;
 }
@@ -194,13 +207,17 @@ mod test {
     #[test]
     fn create_a_level_with_lot_of_ground() {
         let grid = grid_numbering();
-        let keys: [&'static str; 25] = ["e", "g", "g", "g", "g",
-                                        "g", "g", "g", "g", "g",
-                                        "g", "g", "g", "g", "g",
-                                        "g", "g", "g", "g", "g",
-                                        "g", "g", "g", "g", "g"];
+        let keys: [char; 25] = ['e', 'g', 'g', 'g', 'g',
+                                'g', 'g', 'g', 'g', 'g',
+                                'g', 'g', 'g', 'g', 'g',
+                                'g', 'g', 'g', 'g', 'g',
+                                'g', 'g', 'g', 'g', 'g'];
         let level = create_level(grid, keys);
-        assert_eq!(level.get(&11), Some(&"e"));
-        assert_eq!(level.get(&44), Some(&"g"));
+        let eleven = level.get(&11);
+        let el = eleven.map(|eleven| eleven.name);
+        assert_eq!(el, Some('e'));
+        let fourfour = level.get(&44);
+        let four = fourfour.map(|fourfour| fourfour.name);
+        assert_eq!(four, Some('g'));
     }
 }
