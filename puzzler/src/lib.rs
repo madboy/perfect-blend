@@ -87,6 +87,26 @@ pub fn create_level(grid: [i32; 25], keys: [char; 25], colors: HashMap<char, [i3
     return level;
 }
 
+pub fn exit_in_path(position: i32, level: HashMap<i32, Tile>) -> (bool, i32) {
+    let paths = &level[&position].paths;
+    for i in 0..paths.len() {
+        let pos = &paths[i];
+        let path = &level[pos];
+        if path.name == 'e' {
+            return (true, *pos);
+        }
+    }
+    return (false, -1);
+}
+
+pub fn get_next_step(position: i32, level: HashMap<i32, Tile>) -> i32 {
+    let (exit, next) = exit_in_path(position, level);
+    if exit {
+        return next;
+    }
+    return -1;
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -101,6 +121,22 @@ mod test {
         colors.insert('s', [244, 62, 113]);
         colors.insert('r', [255, 255, 255]);
         return colors;
+    }
+
+    fn setup_keys() -> [char; 25] {
+        ['@', 'e', 'g', 'g', 'g',
+        'g', 'g', 'g', 'g', 'g',
+        'g', 'g', 'g', 'g', 'g',
+        'g', 'g', 'g', 'g', 'g',
+        'g', 'g', 'g', 'g', 'g']
+    }
+
+    fn setup_level() -> HashMap<i32, Tile> {
+        let grid = grid_numbering();
+        let keys = setup_keys();
+        let colors = setup_colors();
+        let level = create_level(grid, keys, colors);
+        return level;
     }
 
     #[test]
@@ -232,5 +268,12 @@ mod test {
         assert_eq!(level[&11].paths, [12,21]);
         assert_eq!(level[&44].name, 'g');
         assert_eq!(level[&44].paths, [43, 45, 34, 54]);
+    }
+
+    #[test]
+    fn get_next_step_exit() {
+        let level = setup_level();
+        let next = get_next_step(11, level);
+        assert_eq!(next, 12);
     }
 }
