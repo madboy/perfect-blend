@@ -213,11 +213,7 @@ mod test {
                                 'g', 'g', 'g', 'g', 'g',
                                 'g', 'g', 'g', 'g', 'g'];
         let level = create_level(grid, keys);
-        let eleven = level.get(&11);
-        let el = eleven.map(|eleven| eleven.name);
-        assert_eq!(el, Some('e'));
-        let fourfour = level.get(&44);
-        let four = fourfour.map(|fourfour| fourfour.name);
-        assert_eq!(four, Some('g'));
+        assert_eq!(level[&11].name, 'e');
+        assert_eq!(level[&44].name, 'g');
     }
 }
