@@ -78,10 +78,11 @@ pub fn get_paths(p: i32) -> Vec<i32> {
     return paths;
 }
 
-pub fn create_level(grid: [i32; 25], keys: [char; 25]) -> HashMap<i32, Tile> {
+pub fn create_level(grid: [i32; 25], keys: [char; 25], colors: HashMap<char, [i32; 3]>) -> HashMap<i32, Tile> {
     let mut level: HashMap<i32, Tile> = HashMap::new();
     for i in 0..25 {
-        level.insert(grid[i], Tile::new(keys[i], [1,1,1], get_paths(grid[i])));
+        let name = keys[i];
+        level.insert(grid[i], Tile::new(name, colors[&name], get_paths(grid[i])));
     }
     return level;
 }
@@ -89,6 +90,18 @@ pub fn create_level(grid: [i32; 25], keys: [char; 25]) -> HashMap<i32, Tile> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::collections::HashMap;
+
+    fn setup_colors() -> HashMap<char, [i32; 3]> {
+        let mut colors: HashMap<char, [i32; 3]> = HashMap::new();
+        colors.insert('e', [160, 255, 32]);
+        colors.insert('f', [160, 255, 32]);
+        colors.insert('g', [255, 255, 0]);
+        colors.insert('@', [255, 255, 255]);
+        colors.insert('s', [244, 62, 113]);
+        colors.insert('r', [255, 255, 255]);
+        return colors;
+    }
 
     #[test]
     fn blend_white_and_grey() {
@@ -212,8 +225,12 @@ mod test {
                                 'g', 'g', 'g', 'g', 'g',
                                 'g', 'g', 'g', 'g', 'g',
                                 'g', 'g', 'g', 'g', 'g'];
-        let level = create_level(grid, keys);
+        let colors = setup_colors();
+        let level = create_level(grid, keys, colors);
         assert_eq!(level[&11].name, 'e');
+        assert_eq!(level[&11].color, [160, 255, 32]);
+        assert_eq!(level[&11].paths, [12,21]);
         assert_eq!(level[&44].name, 'g');
+        assert_eq!(level[&44].paths, [43, 45, 34, 54]);
     }
 }
