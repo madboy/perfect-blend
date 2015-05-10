@@ -98,8 +98,10 @@ pub fn color_diff(c1: [i32; 3], c2: [i32; 3]) -> i32 {
 pub fn get_next_step(position: i32, pcolor: [i32; 3], exit: i32, level: HashMap<i32, Tile>) -> i32 {
     let paths = &level[&position].paths;
     let exit_color = level[&exit].color;
-    let mut next: i32 = -1;
+    let mut next: i32 = -100;
     let mut cdiff: i32 = 255;
+    let mut sdiff = -100;
+    let mut color_match = false;
 
     for path in paths {
         // if exit is in our path we should go there
@@ -113,8 +115,15 @@ pub fn get_next_step(position: i32, pcolor: [i32; 3], exit: i32, level: HashMap<
         let color = &level[path].color;
         let tmp_color = blend_colors(pcolor, *color);
         let tmp_cdiff = color_diff(tmp_color, exit_color);
-        if tmp_cdiff < cdiff {
+        let tmp_step_diff = abs(*path - exit);
+        if  !colors_match(pcolor, exit_color) && tmp_cdiff <= cdiff && tmp_step_diff < sdiff {
             cdiff = tmp_cdiff;
+            next = *path;
+            color_match = true;
+            sdiff = tmp_step_diff;
+        } else if !color_match && tmp_step_diff < abs(next - exit) {
+            // if we haven't found a better match earlier
+            // we will just move closer to the exit
             next = *path;
         }
     }
@@ -138,7 +147,7 @@ mod test {
     }
 
     fn setup_keys() -> [char; 25] {
-        ['e', 'e', 'g', 'g', 'g',
+        ['g', 'e', 'g', 'g', 'g',
         'g', 'g', 'g', 'g', 'g',
         'g', 'g', 'g', 'g', 'g',
         'g', 'g', 'g', 'g', 'g',
@@ -292,9 +301,16 @@ mod test {
     }
 
     #[test]
-    fn get_next_step_bette_color_matching() {
+    fn get_next_step_better_color_matching() {
         let level = setup_level();
         let next = get_next_step(23, [255, 255, 255], 12, level);
-        assert_eq!(next, 22);
+        assert_eq!(next, 13);
+    }
+
+    #[test]
+    fn get_next_step_move_close_to_exit() {
+        let level = setup_level();
+        let next = get_next_step(44, [160, 255, 32], 12, level);
+        assert_eq!(next, 34);
     }
 }
