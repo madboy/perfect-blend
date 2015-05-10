@@ -87,22 +87,38 @@ pub fn create_level(grid: [i32; 25], keys: [char; 25], colors: HashMap<char, [i3
     return level;
 }
 
-pub fn exit_in_path(exit: i32, paths: &Vec<i32>) -> (bool, i32) {
-    for path in paths {
-        if *path == exit {
-            return (true, *path)
-        }
+pub fn color_diff(c1: [i32; 3], c2: [i32; 3]) -> i32 {
+    let mut diff: i32 = 0;
+    for i in 0..3 {
+        diff += abs(c1[i] - c2[i])
     }
-    return (false, -1);
+    return diff;
 }
 
 pub fn get_next_step(position: i32, pcolor: [i32; 3], exit: i32, level: HashMap<i32, Tile>) -> i32 {
     let paths = &level[&position].paths;
-    let (exit, next) = exit_in_path(exit, paths);
-    if exit {
-        return next;
+    let exit_color = level[&exit].color;
+    let mut next: i32 = -1;
+    let mut cdiff: i32 = 255;
+
+    for path in paths {
+        // if exit is in our path we should go there
+        // improves both color and exit potential
+        if *path == exit {
+            return *path
+        }
+
+        // move to the tile that will take us closer
+        // to the exit color
+        let color = &level[path].color;
+        let tmp_color = blend_colors(pcolor, *color);
+        let tmp_cdiff = color_diff(tmp_color, exit_color);
+        if tmp_cdiff < cdiff {
+            cdiff = tmp_cdiff;
+            next = *path;
+        }
     }
-    return -1;
+    return next;
 }
 
 #[cfg(test)]
@@ -273,5 +289,12 @@ mod test {
         let level = setup_level();
         let next = get_next_step(11, [255, 255, 255], 12, level);
         assert_eq!(next, 12);
+    }
+
+    #[test]
+    fn get_next_step_bette_color_matching() {
+        let level = setup_level();
+        let next = get_next_step(23, [255, 255, 255], 12, level);
+        assert_eq!(next, 22);
     }
 }
