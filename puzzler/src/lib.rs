@@ -87,20 +87,18 @@ pub fn create_level(grid: [i32; 25], keys: [char; 25], colors: HashMap<char, [i3
     return level;
 }
 
-pub fn exit_in_path(position: i32, level: HashMap<i32, Tile>) -> (bool, i32) {
-    let paths = &level[&position].paths;
-    for i in 0..paths.len() {
-        let pos = &paths[i];
-        let path = &level[pos];
-        if path.name == 'e' {
-            return (true, *pos);
+pub fn exit_in_path(exit: i32, paths: &Vec<i32>) -> (bool, i32) {
+    for path in paths {
+        if *path == exit {
+            return (true, *path)
         }
     }
     return (false, -1);
 }
 
-pub fn get_next_step(position: i32, level: HashMap<i32, Tile>) -> i32 {
-    let (exit, next) = exit_in_path(position, level);
+pub fn get_next_step(position: i32, pcolor: [i32; 3], exit: i32, level: HashMap<i32, Tile>) -> i32 {
+    let paths = &level[&position].paths;
+    let (exit, next) = exit_in_path(exit, paths);
     if exit {
         return next;
     }
@@ -124,7 +122,7 @@ mod test {
     }
 
     fn setup_keys() -> [char; 25] {
-        ['@', 'e', 'g', 'g', 'g',
+        ['e', 'e', 'g', 'g', 'g',
         'g', 'g', 'g', 'g', 'g',
         'g', 'g', 'g', 'g', 'g',
         'g', 'g', 'g', 'g', 'g',
@@ -273,7 +271,7 @@ mod test {
     #[test]
     fn get_next_step_exit() {
         let level = setup_level();
-        let next = get_next_step(11, level);
+        let next = get_next_step(11, [255, 255, 255], 12, level);
         assert_eq!(next, 12);
     }
 }
