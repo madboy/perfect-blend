@@ -95,7 +95,7 @@ pub fn color_diff(c1: [i32; 3], c2: [i32; 3]) -> i32 {
     return diff;
 }
 
-pub fn get_next_step(position: i32, pcolor: [i32; 3], exit: i32, level: HashMap<i32, Tile>) -> i32 {
+pub fn get_next_step(position: i32, pcolor: [i32; 3], exit: i32, level: &HashMap<i32, Tile>) -> i32 {
     let paths = &level[&position].paths;
     let exit_color = level[&exit].color;
     let mut next: i32 = -100;
@@ -296,21 +296,36 @@ mod test {
     #[test]
     fn get_next_step_exit() {
         let level = setup_level();
-        let next = get_next_step(11, [255, 255, 255], 12, level);
+        let next = get_next_step(11, [255, 255, 255], 12, &level);
         assert_eq!(next, 12);
     }
 
     #[test]
     fn get_next_step_better_color_matching() {
         let level = setup_level();
-        let next = get_next_step(23, [255, 255, 255], 12, level);
+        let next = get_next_step(23, [255, 255, 255], 12, &level);
         assert_eq!(next, 13);
     }
 
     #[test]
     fn get_next_step_move_close_to_exit() {
         let level = setup_level();
-        let next = get_next_step(44, [160, 255, 32], 12, level);
+        let next = get_next_step(44, [160, 255, 32], 12, &level);
         assert_eq!(next, 34);
+    }
+
+    #[test]
+    fn unsolvable_level() {
+        let level = setup_level();
+        let mut position = 54;
+        let mut pcolor: [i32; 3] = [255, 255, 255];
+        for _ in 0..9 {
+            let next = get_next_step(position, pcolor, 12, &level);
+            let tcolor = level[&next].color;
+            pcolor = blend_colors(tcolor, pcolor);
+            position = next;
+        }
+        assert_eq!(pcolor, [225, 255, 10]);
+        assert_eq!(position, 11);
     }
 }
