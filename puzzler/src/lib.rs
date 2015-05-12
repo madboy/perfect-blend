@@ -130,6 +130,11 @@ pub fn get_next_step(position: i32, pcolor: [i32; 3], exit: i32, level: &HashMap
     return next;
 }
 
+pub fn can_exit(position: i32, pcolor: [i32; 3], exit: i32, ecolor: [i32; 3]) -> bool {
+    return position == exit &&
+        colors_match(pcolor, ecolor);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -315,15 +320,30 @@ mod test {
     }
 
     #[test]
+    fn cannot_exit() {
+        assert_eq!(can_exit(12, [165, 250, 32], 13, [160, 255, 32]), false)
+    }
+
+    #[test]
+    fn can_exit_for_real() {
+        assert_eq!(can_exit(12, [165, 250, 32], 12, [160, 255, 32]), true)
+    }
+
+    #[test]
     fn unsolvable_level() {
         let level = setup_level();
         let mut position = 54;
         let mut pcolor: [i32; 3] = [255, 255, 255];
+        let exit: i32 = 12;
+        let ecolor = level[&exit].color;
         for _ in 0..9 {
-            let next = get_next_step(position, pcolor, 12, &level);
+            let next = get_next_step(position, pcolor, exit, &level);
             let tcolor = level[&next].color;
             pcolor = blend_colors(tcolor, pcolor);
             position = next;
+            if can_exit(position, pcolor, exit, ecolor) {
+                break;
+            }
         }
         assert_eq!(pcolor, [225, 255, 10]);
         assert_eq!(position, 11);
