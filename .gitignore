@@ -1,0 +1,4 @@
+puzzler/target/*
+*~
+*.swp
+*.lock
