@@ -348,4 +348,31 @@ mod test {
         assert_eq!(pcolor, [225, 255, 10]);
         assert_eq!(position, 11);
     }
+
+    #[test]
+    fn solvable_level() {
+        let grid = grid_numbering();
+        let keys: [char; 25] = ['e', 'f', 'g', 'g', 'g',
+                                'f', 'f', 'g', 'g', 'g',
+                                'g', 'g', 'g', 'g', 'g',
+                                'g', 'g', 'g', 'g', 'g',
+                                'g', 'g', 'g', 'g', 'g'];
+        let colors = setup_colors();
+        let level = create_level(grid, keys, colors);
+        let mut position = 54;
+        let mut pcolor: [i32; 3] = [255, 255, 255];
+        let exit: i32 = 11;
+        let ecolor = level[&exit].color;
+        for _ in 0..9 {
+            let next = get_next_step(position, pcolor, exit, &level);
+            let tcolor = level[&next].color;
+            pcolor = blend_colors(tcolor, pcolor);
+            position = next;
+            if can_exit(position, pcolor, exit, ecolor) {
+                break;
+            }
+        }
+        assert_eq!(pcolor, [165, 255, 30]);
+        assert_eq!(position, 11);
+    }
 }
