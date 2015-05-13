@@ -291,11 +291,21 @@ mod test {
                                 'g', 'g', 'g', 'g', 'g'];
         let colors = setup_colors();
         let level = create_level(grid, keys, colors);
-        assert_eq!(level[&11].name, 'e');
-        assert_eq!(level[&11].color, [160, 255, 32]);
-        assert_eq!(level[&11].paths, [12,21]);
-        assert_eq!(level[&44].name, 'g');
-        assert_eq!(level[&44].paths, [43, 45, 34, 54]);
+        match level.get(&11) {
+            Some(value) => {
+                assert_eq!(value.name, 'e');
+                assert_eq!(value.color, [160,255,32]);
+                assert_eq!(value.paths, [12,21]);
+            },
+            None => assert!(false)
+        };
+        match level.get(&44) {
+            Some(value) => {
+                assert_eq!(value.name, 'g');
+                assert_eq!(value.paths, [43, 45, 34, 54]);
+            },
+            None => assert!(false)
+        };
     }
 
     #[test]
